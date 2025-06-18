@@ -23,20 +23,17 @@ public class TaskService {
     @Autowired
     private UserRepository userRepository;
 
-    // Helper: Ambil user dari Authentication
     private User getCurrentUser(Authentication authentication) {
         String username = authentication.getName();
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
-    // Ambil semua task milik user login
     public List<Task> getTasksByUser(Authentication authentication) {
         User user = getCurrentUser(authentication);
         return taskRepository.findByUser(user);
     }
 
-    // Ambil satu task, hanya jika milik user login
     public Task getTaskById(@NotNull Long taskId, Authentication authentication) {
         User user = getCurrentUser(authentication);
         Task task = taskRepository.findById(taskId)
@@ -47,14 +44,12 @@ public class TaskService {
         return task;
     }
 
-    // Buat task baru (untuk user login)
     public Task createTask(@Valid @NotNull Task task, Authentication authentication) {
         User user = getCurrentUser(authentication);
         task.setUser(user);
         return taskRepository.save(task);
     }
 
-    // Update task (hanya jika milik user login)
     public Task updateTask(@NotNull Long taskId, @Valid @NotNull Task updatedTask, Authentication authentication) {
         User user = getCurrentUser(authentication);
         Task task = taskRepository.findById(taskId)
@@ -70,7 +65,6 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
-    // Hapus task (hanya jika milik user login)
     public void deleteTask(@NotNull Long taskId, Authentication authentication) {
         User user = getCurrentUser(authentication);
         Task task = taskRepository.findById(taskId)
